@@ -4,6 +4,7 @@
 Game::Game( const Window& window ) 
 	:BaseGame{ window }
 {
+	m_Background = new Texture("Background.png");
 	Initialize();
 }
 

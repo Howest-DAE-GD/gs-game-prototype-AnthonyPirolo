@@ -1,5 +1,8 @@
 #pragma once
 #include "BaseGame.h"
+
+class Texture;
+
 class Game : public BaseGame
 {
 public:
@@ -23,6 +26,7 @@ public:
 
 private:
 
+	Texture* m_Background{};
 	// FUNCTIONS
 	void Initialize();
 	void Cleanup( );
