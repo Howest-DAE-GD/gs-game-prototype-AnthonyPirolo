@@ -24,9 +24,30 @@ public:
 	void ProcessMouseDownEvent( const SDL_MouseButtonEvent& e ) override;
 	void ProcessMouseUpEvent( const SDL_MouseButtonEvent& e ) override;
 
+	void UpdatePlebs();
+
 private:
 
 	Texture* m_Background{};
+	Texture* m_EvilWizard{};
+	Texture* m_PlebsAliveT{};
+	Texture* m_PlebsDeadT{};
+
+	Point2f m_Loc{};
+
+	Rectf m_SourceRect{};
+	Rectf m_DestRect{};
+
+	bool m_PlebsAlive{ true };
+	bool m_PlebsSpawnedIn{ false };
+
+	Point2f m_RandomPlebsLoc{};
+	Rectf m_RandomPlebsSrc;
+	Rectf m_RandomPlebsDest;
+
+	bool m_Plebskilled{};
+
+	int m_Points{ 0 };
 	// FUNCTIONS
 	void Initialize();
 	void Cleanup( );
