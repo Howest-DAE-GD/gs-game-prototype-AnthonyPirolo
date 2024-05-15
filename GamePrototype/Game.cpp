@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Game.h"
 #include "Texture.h"
+#include "utils.h"
 
 Game::Game( const Window& window ) 
 	:BaseGame{ window }
@@ -9,6 +10,7 @@ Game::Game( const Window& window )
 	m_EvilWizard = new Texture("EvilWizard.png");
 	m_PlebsAliveT = new Texture("Plebs_Alive.png");
 	m_PlebsDeadT = new Texture("Plebs_Dead.png");
+	m_PollenAmmo = new Texture("PollenCount.png");
 	m_Loc.x = window.width / 2.0f - m_EvilWizard->GetWidth() / 2.0f;
 	m_Loc.y = window.height / 2.0f - m_EvilWizard->GetHeight() / 2.0f;
 	m_SourceRect.left = 0.0f;
@@ -40,6 +42,7 @@ void Game::Cleanup( )
 
 void Game::Update( float elapsedSec )
 {
+	Move(elapsedSec);
 	m_DestRect.left = m_Loc.x;
 	m_DestRect.bottom = m_Loc.y;
 
@@ -58,16 +61,51 @@ void Game::Update( float elapsedSec )
 		if (m_RandomPlebsDest.bottom + m_RandomPlebsDest.height / 3.0f < m_DestRect.bottom && 
 			m_DestRect.bottom < m_RandomPlebsDest.bottom + (2.0f * m_RandomPlebsDest.height / 3.0f))
 		{
-			m_RandomPlebsLoc.x = float(rand() % 500);
-			m_RandomPlebsLoc.y = float(rand() % 980);
+			m_RandomPlebsLoc.x = float(rand() % 1000);
+			m_RandomPlebsLoc.y = float(rand() % 500);
 			m_Points += 100;
 		}
 
 	m_RandomPlebsDest.left = m_RandomPlebsLoc.x;
 	m_RandomPlebsDest.bottom = m_RandomPlebsLoc.y;
 
+	InfectPlebs();
+
+
 }
 
+void Game::InfectPlebs()
+{
+	const int SPEED{ 200 };
+	const Uint8* pStates = SDL_GetKeyboardState(nullptr);
+
+	const bool fire{ bool(pStates[SDL_SCANCODE_SPACE]) };
+
+	if (fire)
+	{
+		m_PollenMeter -= 0.1f;
+		if (PlebsInRange())
+		{
+			m_Points += 100;
+			m_RandomPlebsLoc.x = float(rand() % 1000);
+			m_RandomPlebsLoc.y = float(rand() % 500);
+			if (m_PollenMeter <= 90.0f && m_PollenMeter > 0.0f) m_PollenMeter += 10.0f;
+			else m_PollenMeter = 100.0f;
+		}
+	}
+}
+
+bool Game::PlebsInRange()
+{
+	if (utils::IsPointInCircle(Point2f(m_RandomPlebsDest.left, m_RandomPlebsDest.bottom),
+		Circlef(Point2f(m_DestRect.left + m_DestRect.width / 2, m_DestRect.bottom + m_DestRect.height / 2), 150.0f)))
+		if (utils::IsPointInCircle(Point2f(m_RandomPlebsDest.left + m_RandomPlebsDest.width, m_RandomPlebsDest.bottom),
+			Circlef(Point2f(m_DestRect.left + m_DestRect.width / 2, m_DestRect.bottom + m_DestRect.height / 2), 150.0f)))
+			if (utils::IsPointInCircle(Point2f(m_RandomPlebsDest.left, m_RandomPlebsDest.bottom + m_RandomPlebsDest.height),
+				Circlef(Point2f(m_DestRect.left + m_DestRect.width / 2, m_DestRect.bottom + m_DestRect.height / 2), 150.0f)))
+				if (utils::IsPointInCircle(Point2f(m_RandomPlebsDest.left + m_RandomPlebsDest.width, m_RandomPlebsDest.bottom + m_RandomPlebsDest.height),
+					Circlef(Point2f(m_DestRect.left + m_DestRect.width / 2, m_DestRect.bottom + m_DestRect.height / 2), 150.0f))) return true;
+}
 void Game::Draw( ) const
 {
 	ClearBackground( );
@@ -76,6 +114,50 @@ void Game::Draw( ) const
 
 	m_PlebsAliveT->Draw(m_RandomPlebsDest, m_RandomPlebsSrc);
 
+	utils::DrawEllipse(Point2f(m_DestRect.left + m_DestRect.width / 2, m_DestRect.bottom + m_DestRect.height / 2), 150, 150, 0.5f);
+	utils::FillRect(Rectf(425.0f, 0.0f, 200.0f, 50.0f));
+
+	const int SPEED{ 200 };
+	const Uint8* pStates = SDL_GetKeyboardState(nullptr);
+
+	const bool fire{ bool(pStates[SDL_SCANCODE_SPACE]) };
+
+	if (fire)
+	{
+		
+		for (int i{1}; i <= 150; i++)
+		{
+			
+			utils::DrawEllipse(Point2f(m_DestRect.left + m_DestRect.width / 2, m_DestRect.bottom + m_DestRect.height / 2), i, i, 0.5f);
+		}
+	}
+	m_EvilWizard->Draw(m_DestRect, m_SourceRect);
+
+	utils::SetColor(Color4f(1.0f, 0.0f, 0.0f, 1.0f));
+	utils::FillRect(Rectf(20.0f, 650.0f, m_PollenMeter * 2, 20.0f));
+	utils::SetColor(Color4f(1.0f, 1.0f, 1.0f, 1.0f));
+	utils::DrawRect(Rectf(20.0f, 650.0f, 200.0f, 20.0f));
+	m_PollenAmmo->Draw(Rectf(20.0f, 675.0f, m_PollenAmmo->GetWidth() / 3, m_PollenAmmo->GetHeight() / 3),
+		Rectf(0.0f, 0.0f, m_PollenAmmo->GetWidth(), m_PollenAmmo->GetHeight()));
+}
+
+void Game::Move(float elapsedSec)
+{
+	const int SPEED{ 200 };
+	const Uint8* pStates = SDL_GetKeyboardState(nullptr);
+
+	// read the key values
+
+	const bool isLeft{ bool(pStates[SDL_SCANCODE_LEFT]) };
+	const bool isRight{ bool(pStates[SDL_SCANCODE_RIGHT]) };
+	const bool isUp{ bool(pStates[SDL_SCANCODE_UP]) };
+	const bool isDown{ bool(pStates[SDL_SCANCODE_DOWN]) };
+
+	// update position
+	if (isLeft)        m_Loc.x -= SPEED * elapsedSec;
+	if (isRight)    m_Loc.x += SPEED * elapsedSec;
+	if (isUp)        m_Loc.y += SPEED * elapsedSec;
+	if (isDown)        m_Loc.y -= SPEED * elapsedSec;
 }
 
 void Game::UpdatePlebs()
@@ -85,29 +167,7 @@ void Game::UpdatePlebs()
 
 void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
 {
-	switch (e.keysym.sym)
-	{
-	case SDLK_LEFT:
-	{
-		m_Loc.x -= 10;
-	}
-	break;
-	case SDLK_RIGHT:
-	{
-		m_Loc.x += 10;
-	}
-	break;
-	case SDLK_UP:
-	{
-		m_Loc.y += 10;
-	}
-	break;
-	case SDLK_DOWN:
-	{
-		m_Loc.y -= 10;
-	}
-	break;
-	}
+	
 }
 
 void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )

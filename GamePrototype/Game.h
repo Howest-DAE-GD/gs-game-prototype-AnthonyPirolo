@@ -26,12 +26,18 @@ public:
 
 	void UpdatePlebs();
 
+	void Move(float elapsedSec);
+	void InfectPlebs();
+	bool PlebsInRange();
+	float m_PollenMeter{ 100.0f };
+
 private:
 
 	Texture* m_Background{};
 	Texture* m_EvilWizard{};
 	Texture* m_PlebsAliveT{};
 	Texture* m_PlebsDeadT{};
+	Texture* m_PollenAmmo{};
 
 	Point2f m_Loc{};
 
@@ -46,6 +52,8 @@ private:
 	Rectf m_RandomPlebsDest;
 
 	bool m_Plebskilled{};
+
+
 
 	int m_Points{ 0 };
 	// FUNCTIONS
