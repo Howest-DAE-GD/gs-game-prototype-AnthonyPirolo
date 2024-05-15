@@ -38,6 +38,7 @@ private:
 	Texture* m_PlebsAliveT{};
 	Texture* m_PlebsDeadT{};
 	Texture* m_PollenAmmo{};
+	Texture* m_GameOver{};
 
 	Point2f m_Loc{};
 
@@ -52,7 +53,7 @@ private:
 	Rectf m_RandomPlebsDest;
 
 	bool m_Plebskilled{};
-
+	bool m_GameOverbool{ false };
 
 
 	int m_Points{ 0 };

@@ -11,6 +11,7 @@ Game::Game( const Window& window )
 	m_PlebsAliveT = new Texture("Plebs_Alive.png");
 	m_PlebsDeadT = new Texture("Plebs_Dead.png");
 	m_PollenAmmo = new Texture("PollenCount.png");
+	m_GameOver = new Texture("GameOver.png");
 	m_Loc.x = window.width / 2.0f - m_EvilWizard->GetWidth() / 2.0f;
 	m_Loc.y = window.height / 2.0f - m_EvilWizard->GetHeight() / 2.0f;
 	m_SourceRect.left = 0.0f;
@@ -71,6 +72,7 @@ void Game::Update( float elapsedSec )
 
 	InfectPlebs();
 
+	m_PollenMeter -= 0.05f;
 
 }
 
@@ -93,6 +95,7 @@ void Game::InfectPlebs()
 			else m_PollenMeter = 100.0f;
 		}
 	}
+	if (m_PollenMeter <= 0.0f) m_GameOverbool = true;
 }
 
 bool Game::PlebsInRange()
@@ -108,37 +111,42 @@ bool Game::PlebsInRange()
 }
 void Game::Draw( ) const
 {
-	ClearBackground( );
-	m_Background->Draw();
-	m_EvilWizard->Draw(m_DestRect, m_SourceRect);
-
-	m_PlebsAliveT->Draw(m_RandomPlebsDest, m_RandomPlebsSrc);
-
-	utils::DrawEllipse(Point2f(m_DestRect.left + m_DestRect.width / 2, m_DestRect.bottom + m_DestRect.height / 2), 150, 150, 0.5f);
-	utils::FillRect(Rectf(425.0f, 0.0f, 200.0f, 50.0f));
-
-	const int SPEED{ 200 };
-	const Uint8* pStates = SDL_GetKeyboardState(nullptr);
-
-	const bool fire{ bool(pStates[SDL_SCANCODE_SPACE]) };
-
-	if (fire)
+	if (!m_GameOverbool)
 	{
-		
-		for (int i{1}; i <= 150; i++)
-		{
-			
-			utils::DrawEllipse(Point2f(m_DestRect.left + m_DestRect.width / 2, m_DestRect.bottom + m_DestRect.height / 2), i, i, 0.5f);
-		}
-	}
-	m_EvilWizard->Draw(m_DestRect, m_SourceRect);
+		ClearBackground();
+		m_Background->Draw();
+		m_EvilWizard->Draw(m_DestRect, m_SourceRect);
 
-	utils::SetColor(Color4f(1.0f, 0.0f, 0.0f, 1.0f));
-	utils::FillRect(Rectf(20.0f, 650.0f, m_PollenMeter * 2, 20.0f));
-	utils::SetColor(Color4f(1.0f, 1.0f, 1.0f, 1.0f));
-	utils::DrawRect(Rectf(20.0f, 650.0f, 200.0f, 20.0f));
-	m_PollenAmmo->Draw(Rectf(20.0f, 675.0f, m_PollenAmmo->GetWidth() / 3, m_PollenAmmo->GetHeight() / 3),
-		Rectf(0.0f, 0.0f, m_PollenAmmo->GetWidth(), m_PollenAmmo->GetHeight()));
+		m_PlebsAliveT->Draw(m_RandomPlebsDest, m_RandomPlebsSrc);
+
+		
+		utils::FillRect(Rectf(425.0f, 0.0f, 200.0f, 50.0f));
+
+		const int SPEED{ 200 };
+		const Uint8* pStates = SDL_GetKeyboardState(nullptr);
+
+		const bool fire{ bool(pStates[SDL_SCANCODE_SPACE]) };
+
+		if (fire)
+		{
+
+			for (int i{ 1 }; i <= 150; i++)
+			{
+				utils::SetColor(Color4f(1.0f, 1.0f, 1.0f, 1.0f / (i / 20.0f)));
+				utils::DrawEllipse(Point2f(m_DestRect.left + m_DestRect.width / 2, m_DestRect.bottom + m_DestRect.height / 2), i, i, 1.0f);
+				
+			}
+		}
+		m_EvilWizard->Draw(m_DestRect, m_SourceRect);
+
+		utils::SetColor(Color4f(1.0f, 0.0f, 0.0f, 1.0f));
+		utils::FillRect(Rectf(20.0f, 650.0f, m_PollenMeter * 2, 20.0f));
+		utils::SetColor(Color4f(1.0f, 1.0f, 1.0f, 1.0f));
+		utils::DrawRect(Rectf(20.0f, 650.0f, 200.0f, 20.0f));
+		m_PollenAmmo->Draw(Rectf(20.0f, 675.0f, m_PollenAmmo->GetWidth() / 3, m_PollenAmmo->GetHeight() / 3),
+			Rectf(0.0f, 0.0f, m_PollenAmmo->GetWidth(), m_PollenAmmo->GetHeight()));
+	}
+	else m_GameOver->Draw(Rectf(0.0f, 0.0f, m_GameOver->GetWidth(), m_GameOver->GetHeight()), Rectf(0.0f, 0.0f, m_GameOver->GetWidth(), m_GameOver->GetHeight()));
 }
 
 void Game::Move(float elapsedSec)
