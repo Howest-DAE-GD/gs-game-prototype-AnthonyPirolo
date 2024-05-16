@@ -1,5 +1,5 @@
 #pragma once
-#include "BaseGame.h"
+#include "BaseGame.h" 
 
 class Texture;
 
@@ -28,7 +28,7 @@ public:
 
 	void Move(float elapsedSec);
 	void InfectPlebs();
-	bool PlebsInRange();
+	bool PlebsInRange(Rectf plebsDest);
 	float m_PollenMeter{ 100.0f };
 
 private:
@@ -39,24 +39,34 @@ private:
 	Texture* m_PlebsDeadT{};
 	Texture* m_PollenAmmo{};
 	Texture* m_GameOver{};
+	Texture* m_Score{};
 
 	Point2f m_Loc{};
 
 	Rectf m_SourceRect{};
 	Rectf m_DestRect{};
 
-	bool m_PlebsAlive{ true };
-	bool m_PlebsSpawnedIn{ false };
-
 	Point2f m_RandomPlebsLoc{};
-	Rectf m_RandomPlebsSrc;
 	Rectf m_RandomPlebsDest;
+
+	Rectf m_RandomPlebsSrc;
+
+	Point2f m_RandomPlebsLoc2{};
+	Rectf m_RandomPlebsDest2;
+
+	Point2f m_RandomPlebsLoc3{};
+	Rectf m_RandomPlebsDest3;
 
 	bool m_Plebskilled{};
 	bool m_GameOverbool{ false };
 
 
 	int m_Points{ 0 };
+
+	std::string m_ScoreString{ "Score:" };
+	Texture* m_ScorePrint;
+	std::string m_ScoreCounter{  };
+	TTF_Font* Font;
 	// FUNCTIONS
 	void Initialize();
 	void Cleanup( );
