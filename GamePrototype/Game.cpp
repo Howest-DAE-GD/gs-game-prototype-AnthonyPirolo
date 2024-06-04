@@ -27,8 +27,8 @@ Game::Game( const Window& window )
 	m_DestRect.width = m_EvilWizard->GetWidth() / 3 * 2;
 	m_DestRect.height = m_EvilWizard->GetHeight() / 3 * 2;
 
-	m_RandomPlebsLoc.x = float(rand() % (800 / 9 * 8));
-	m_RandomPlebsLoc.y = float(rand() % (980 / 9 * 8));
+	m_RandomPlebsLoc.x = float(rand() % (700 / 9 * 8) + 30);
+	m_RandomPlebsLoc.y = float(rand() % (980 / 9 * 8) + 30);
 	Initialize();
 }
 
@@ -39,10 +39,18 @@ Game::~Game()
 
 void Game::Initialize()
 {
-	m_RandomPlebsLoc2.x = float(rand() % (980 / 9 * 8));
-	m_RandomPlebsLoc2.y = float(rand() % (800 / 9 * 8));
-	m_RandomPlebsLoc3.x = float(rand() % (980 / 9 * 8));
-	m_RandomPlebsLoc3.y = float(rand() % (800 / 9 * 8));
+	m_RandomPlebsLoc2.x = float(rand() % (930 / 9 * 8) + 30);
+	m_RandomPlebsLoc2.y = float(rand() % (700 / 9 * 8) + 30);
+	m_RandomPlebsLoc3.x = float(rand() % (930 / 9 * 8) + 30);
+	m_RandomPlebsLoc3.y = float(rand() % (700 / 9 * 8) + 30);
+
+	for (int i{}; i <= 2; i++)
+	{
+		m_BulletsDown[i] = Rectf(3000.0f, 3000.0f, 6.0f, 6.0f);
+		m_BulletsUp[i] = Rectf(3000.0f, 3000.0f, 6.0f, 6.0f);
+		m_BulletsRight[i] = Rectf(3000.0f, 3000.0f, 6.0f, 6.0f);
+		m_BulletsLeft[i] = Rectf(3000.0f, 3000.0f, 6.0f, 6.0f);
+	}
 }
 
 void Game::Cleanup( )
@@ -51,6 +59,130 @@ void Game::Cleanup( )
 
 void Game::Update( float elapsedSec )
 {
+	m_NewPowerCtr += elapsedSec;
+
+	m_Counter += elapsedSec;
+
+	m_InfPllnCntr += elapsedSec;
+
+	m_DblSpdCntr += elapsedSec;
+
+	m_Shootcounter += elapsedSec;
+
+	for (int i{}; i <= 2; i++)
+	{
+		if (HitByBullet(m_BulletsDown[i]))
+		{
+			m_PollenMeter -= 0.1f;
+		}
+		if (HitByBullet(m_BulletsUp[i]))
+		{
+			m_PollenMeter -= 0.1f;
+		}
+		if (HitByBullet(m_BulletsLeft[i]))
+		{
+			m_PollenMeter -= 0.1f;
+		}
+		if (HitByBullet(m_BulletsRight[i]))
+		{
+			m_PollenMeter -= 0.1f;
+		}
+	}
+	
+	if (m_Shootcounter >= 4)
+	{
+		m_BulletsRight[0].left = m_RandomPlebsDest.left;
+		m_BulletsRight[1].left = m_RandomPlebsDest2.left;
+		m_BulletsRight[2].left = m_RandomPlebsDest3.left;
+		m_BulletsRight[0].bottom = m_RandomPlebsDest.bottom;
+		m_BulletsRight[1].bottom = m_RandomPlebsDest2.bottom;
+		m_BulletsRight[2].bottom = m_RandomPlebsDest3.bottom;
+
+		m_BulletsLeft[0].left = m_RandomPlebsDest.left;
+		m_BulletsLeft[1].left = m_RandomPlebsDest2.left;
+		m_BulletsLeft[2].left = m_RandomPlebsDest3.left;
+		m_BulletsLeft[0].bottom = m_RandomPlebsDest.bottom;
+		m_BulletsLeft[1].bottom = m_RandomPlebsDest2.bottom;
+		m_BulletsLeft[2].bottom = m_RandomPlebsDest3.bottom;
+
+		m_BulletsUp[0].bottom = m_RandomPlebsDest.bottom;
+		m_BulletsUp[1].bottom = m_RandomPlebsDest2.bottom;
+		m_BulletsUp[2].bottom = m_RandomPlebsDest3.bottom;
+		m_BulletsUp[0].left = m_RandomPlebsDest.left;
+		m_BulletsUp[1].left = m_RandomPlebsDest2.left;
+		m_BulletsUp[2].left = m_RandomPlebsDest3.left;
+
+		m_BulletsDown[0].bottom = m_RandomPlebsDest.bottom;
+		m_BulletsDown[1].bottom = m_RandomPlebsDest2.bottom;
+		m_BulletsDown[2].bottom = m_RandomPlebsDest3.bottom;
+		m_BulletsDown[0].left = m_RandomPlebsDest.left;
+		m_BulletsDown[1].left = m_RandomPlebsDest2.left;
+		m_BulletsDown[2].left = m_RandomPlebsDest3.left;
+
+		m_Shootcounter = 0;
+	}
+
+	for (int i{}; i <= 2; i++)
+	{
+		m_BulletsDown[i].bottom--;
+	}
+
+	for (int i{}; i <= 2; i++)
+	{
+		m_BulletsLeft[i].left--;
+	}
+
+	for (int i{}; i <= 2; i++)
+	{
+		m_BulletsRight[i].left++;
+	}
+
+	for (int i{}; i <= 2; i++)
+	{
+		m_BulletsUp[i].bottom++;
+	}
+
+	if (m_NewPowerCtr >= 10 && !m_PowerUpSpawned)
+	{
+		int random = rand() % 2;
+
+	 	switch (random)
+		{
+		case(0):
+			m_CurrentPowerUp = powerUp::speed;
+			break;
+		case(1):
+			m_CurrentPowerUp = powerUp::pollen;
+			break;
+		case(2):
+			m_CurrentPowerUp = powerUp::points;
+			break;
+		}
+		m_PowerUpSpawned = true;
+		m_CurrentPowerUpLoc.x = float(rand() % (930 / 9 * 8) + 30);
+		m_CurrentPowerUpLoc.y = float(rand() % (700 / 9 * 8) + 30);
+	}
+	if (m_DblSpeed) m_SPEEEEEEED = 400;
+	else if (m_Counter >= 1 && !m_DblSpeed)
+	{
+		m_SPEEEEEEED = 200;
+		m_Counter = 0;
+	}
+
+	if (m_InfPllnCntr >= 3)
+	{
+		m_InfPollen = false;
+	}
+
+	if (m_DblSpdCntr >= 3)
+	{
+		m_DblSpeed = false;
+	}
+
+	if (m_DblSpeed)
+	{
+		m_SPEEEEEEED = 400;
+	}
 	if (!m_GameOverbool) {
 		Move(elapsedSec);
 		m_DestRect.left = m_Loc.x;
@@ -81,8 +213,11 @@ void Game::Update( float elapsedSec )
 		m_RandomPlebsDest3.bottom = m_RandomPlebsLoc3.y;
 
 		InfectPlebs();
-
-		m_PollenMeter -= 0.05f;
+		
+		if (!m_InfPollen)
+		{
+			m_PollenMeter -= 0.05f;
+		}
 
 		m_ScoreCounter = std::to_string(m_Points);
 
@@ -97,6 +232,41 @@ void Game::Update( float elapsedSec )
 
 	}
 
+	if (PowerUpInRange(m_CurrentPowerUpLoc))
+	{
+		switch (m_CurrentPowerUp)
+		{
+		case powerUp::speed:
+			m_DblSpeed = true;
+			m_DblSpdCntr = 0;
+			m_NewPowerCtr = 0;
+			m_PowerUpSpawned = false;
+			m_CurrentPowerUp = powerUp::none;
+			break;
+		case powerUp::pollen:
+			m_InfPollen = true;
+			m_InfPllnCntr = 0;
+			m_NewPowerCtr = 0;
+			m_PowerUpSpawned = false;
+			m_CurrentPowerUp = powerUp::none;
+			break;
+		case powerUp::points:
+			m_Points += 200;
+			m_NewPowerCtr = 0;
+			m_PowerUpSpawned = false;
+			m_CurrentPowerUp = powerUp::none;
+			break;
+
+		}
+	}
+	if (m_DestRect.bottom <= 22)
+		m_DestRect.bottom = 22;
+	if (m_DestRect.bottom + m_DestRect.height >= 702)
+		m_DestRect.bottom = 702 - m_DestRect.height;
+	if (m_DestRect.left <= 22)
+		m_DestRect.left = 22;
+	if (m_DestRect.left + m_DestRect.width >= 1052)
+		m_DestRect.left = 1052 - m_DestRect.width;
 }
 
 void Game::InfectPlebs()
@@ -106,16 +276,21 @@ void Game::InfectPlebs()
 
 	const bool fire{ bool(pStates[SDL_SCANCODE_SPACE]) };
 
-
+	if (fire && !m_InfPollen)
+	{
+		m_PollenMeter -= 0.1f;
+	}
 	if (fire)
 	{
 		if (PlebsInRange(m_RandomPlebsDest2))
 		{
 			m_Points += 100;
-			m_RandomPlebsLoc2.x = float(rand() % 980);
-			m_RandomPlebsLoc2.y = float(rand() % 700);
+			m_RandomPlebsLoc2.x = float(rand() % 980 + 30);
+			m_RandomPlebsLoc2.y = float(rand() % 600 + 30);
 			if (m_PollenMeter <= 90.0f && m_PollenMeter > 0.0f) m_PollenMeter += 10.0f;
 			else m_PollenMeter = 100.0f;
+			m_SPEEEEEEED = 250;
+			m_Counter = 0;
 		}
 	}
 	if (fire)
@@ -123,10 +298,12 @@ void Game::InfectPlebs()
 		if (PlebsInRange(m_RandomPlebsDest3))
 		{
 			m_Points += 100;
-			m_RandomPlebsLoc3.x = float(rand() % 980);
-			m_RandomPlebsLoc3.y = float(rand() % 700);
+			m_RandomPlebsLoc3.x = float(rand() % 980 + 30);
+			m_RandomPlebsLoc3.y = float(rand() % 600 + 30);
 			if (m_PollenMeter <= 90.0f && m_PollenMeter > 0.0f) m_PollenMeter += 10.0f;
 			else m_PollenMeter = 100.0f;
+			m_SPEEEEEEED = 250;
+			m_Counter = 0;
 		}
 	}
 	if (fire)
@@ -134,10 +311,12 @@ void Game::InfectPlebs()
 		if (PlebsInRange(m_RandomPlebsDest))
 		{
 			m_Points += 100;
-			m_RandomPlebsLoc.x = float(rand() % 980);
-			m_RandomPlebsLoc.y = float(rand() % 700);
+			m_RandomPlebsLoc.x = float(rand() % 980 + 30);
+			m_RandomPlebsLoc.y = float(rand() % 600 + 30);
 			if (m_PollenMeter <= 90.0f && m_PollenMeter > 0.0f) m_PollenMeter += 10.0f;
 			else m_PollenMeter = 100.0f;
+			m_SPEEEEEEED = 250;
+			m_Counter = 0;
 		}
 	}
 	if (m_PollenMeter <= 0.0f) m_GameOverbool = true;
@@ -154,8 +333,18 @@ bool Game::PlebsInRange(Rectf PlebsDest)
 				if (utils::IsPointInCircle(Point2f(PlebsDest.left + PlebsDest.width, PlebsDest.bottom + PlebsDest.height),
 					Circlef(Point2f(m_DestRect.left + m_DestRect.width / 2, m_DestRect.bottom + m_DestRect.height / 2), 150.0f))) return true;
 }
+
+bool Game::PowerUpInRange(Point2f powerUp)
+{
+	if (utils::IsPointInRect(powerUp, m_DestRect))
+	{
+		m_NewPowerCtr = 0;
+		return true;
+	}
+}
 void Game::Draw( ) const
 {
+	utils::SetColor(Color4f(1.0f, 1.0f, 1.0f, 1.0f));
 	if (!m_GameOverbool)
 	{
 		ClearBackground();
@@ -194,19 +383,57 @@ void Game::Draw( ) const
 		utils::DrawRect(Rectf(20.0f, 650.0f, 200.0f, 20.0f));
 		m_PollenAmmo->Draw(Rectf(20.0f, 675.0f, m_PollenAmmo->GetWidth() / 3, m_PollenAmmo->GetHeight() / 3),
 			Rectf(0.0f, 0.0f, m_PollenAmmo->GetWidth(), m_PollenAmmo->GetHeight()));
+
+		for (int i{}; i <= 2; i++)
+		{
+			utils::SetColor(Color4f(0.5f, 0.5f, 0.0f, 1.0f));
+			utils::FillRect(m_BulletsDown[i]);
+		}
+
+		for (int i{}; i <= 2; i++)
+		{
+			utils::SetColor(Color4f(0.5f, 0.5f, 0.0f, 1.0f));
+			utils::FillRect(m_BulletsLeft[i]);
+		}
+
+		for (int i{}; i <= 2; i++)
+		{
+			utils::SetColor(Color4f(0.5f, 0.5f, 0.0f, 1.0f));
+			utils::FillRect(m_BulletsRight[i]);
+		}
+
+		for (int i{}; i <= 2; i++)
+		{
+			utils::SetColor(Color4f(0.5f, 0.5f, 0.0f, 1.0f));
+			utils::FillRect(m_BulletsUp[i]);
+		}
+		switch (m_CurrentPowerUp)
+		{
+		case powerUp::speed:
+			utils::SetColor(Color4f(0.0f, 1.0f, 0.0f, 1.0f));
+			utils::FillRect(Rectf(m_CurrentPowerUpLoc.x - 4, m_CurrentPowerUpLoc.y - 4, 8, 8));
+			break;
+		case powerUp::pollen:
+			utils::SetColor(Color4f(1.0f, 0.0f, 0.0f, 1.0f));
+			utils::FillRect(Rectf(m_CurrentPowerUpLoc.x - 4, m_CurrentPowerUpLoc.y - 4, 8, 8));
+			break;
+		case powerUp::points:
+			utils::SetColor(Color4f(0.0f, 0.0f, 0.0f, 1.0f));
+			utils::FillRect(Rectf(m_CurrentPowerUpLoc.x - 4, m_CurrentPowerUpLoc.y - 4, 8, 8));
+			break;
+
+		}
 	}
 	else 
 	{
 		m_GameOver->Draw(Rectf(0.0f, 0.0f, m_GameOver->GetWidth(), m_GameOver->GetHeight()), Rectf(0.0f, 0.0f, m_GameOver->GetWidth(), m_GameOver->GetHeight()));
 		m_Score->Draw(Rectf(575.0f, 50.0f, 360.0f, 125.0f));
 	}
-
-	
 }
 
 void Game::Move(float elapsedSec)
 {
-	const int SPEED{ 200 };
+	const int SPEED{ m_SPEEEEEEED };
 	const Uint8* pStates = SDL_GetKeyboardState(nullptr);
 
 	// read the key values
@@ -221,6 +448,11 @@ void Game::Move(float elapsedSec)
 	if (isRight)    m_Loc.x += SPEED * elapsedSec;
 	if (isUp)        m_Loc.y += SPEED * elapsedSec;
 	if (isDown)        m_Loc.y -= SPEED * elapsedSec;
+}
+
+bool Game::HitByBullet(Rectf bullet)
+{
+	return utils::IsPointInRect(Point2f(bullet.left, bullet.bottom), m_DestRect);
 }
 
 void Game::UpdatePlebs()

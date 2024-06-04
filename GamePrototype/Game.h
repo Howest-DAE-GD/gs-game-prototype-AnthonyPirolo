@@ -30,7 +30,15 @@ public:
 	void InfectPlebs();
 	bool PlebsInRange(Rectf plebsDest);
 	float m_PollenMeter{ 100.0f };
+	bool PowerUpInRange(Point2f powerUp);
+	bool HitByBullet(Rectf bullet);
 
+	enum class powerUp
+	{
+		speed, pollen, points, none
+	};
+
+	powerUp m_CurrentPowerUp;
 private:
 
 	Texture* m_Background{};
@@ -60,6 +68,7 @@ private:
 	bool m_Plebskilled{};
 	bool m_GameOverbool{ false };
 
+	Point2f m_CurrentPowerUpLoc{};
 
 	int m_Points{ 0 };
 
@@ -67,6 +76,21 @@ private:
 	Texture* m_ScorePrint;
 	std::string m_ScoreCounter{  };
 	TTF_Font* Font;
+
+	int m_SPEEEEEEED{ 200 };
+	float m_Counter{};
+	bool m_DblSpeed{ false };
+	bool m_InfPollen{ false };
+	float m_DblSpdCntr{};
+	float m_InfPllnCntr{};
+	float m_NewPowerCtr{};
+	bool m_PowerUpSpawned{false};
+
+	float m_Shootcounter{};
+	Rectf m_BulletsUp[3];
+	Rectf m_BulletsDown[3];
+	Rectf m_BulletsRight[3];
+	Rectf m_BulletsLeft[3];
 	// FUNCTIONS
 	void Initialize();
 	void Cleanup( );
