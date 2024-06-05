@@ -73,19 +73,23 @@ void Game::Update( float elapsedSec )
 	{
 		if (HitByBullet(m_BulletsDown[i]))
 		{
-			m_PollenMeter -= 0.1f;
+			m_PollenMeter -= 10.0f;
+			m_BulletsDown[i].bottom = 3000.0f;
 		}
 		if (HitByBullet(m_BulletsUp[i]))
 		{
-			m_PollenMeter -= 0.1f;
+			m_PollenMeter -= 10.0f;
+			m_BulletsUp[i].bottom = 3000.0f;
 		}
 		if (HitByBullet(m_BulletsLeft[i]))
 		{
-			m_PollenMeter -= 0.1f;
+			m_PollenMeter -= 10.0f;
+			m_BulletsLeft[i].bottom = 3000.0f;
 		}
 		if (HitByBullet(m_BulletsRight[i]))
 		{
-			m_PollenMeter -= 0.1f;
+			m_PollenMeter -= 10.0f;
+			m_BulletsRight[i].bottom = 3000.0f;
 		}
 	}
 	
