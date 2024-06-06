@@ -48,6 +48,7 @@ private:
 	Texture* m_PollenAmmo{};
 	Texture* m_GameOver{};
 	Texture* m_Score{};
+	Texture* m_StartScreen{};
 
 	Point2f m_Loc{};
 
@@ -91,6 +92,9 @@ private:
 	Rectf m_BulletsDown[3];
 	Rectf m_BulletsRight[3];
 	Rectf m_BulletsLeft[3];
+
+	bool m_Reset{ false };
+	bool m_GameStarted{ false };
 	// FUNCTIONS
 	void Initialize();
 	void Cleanup( );
