@@ -289,13 +289,7 @@ void Game::Update( float elapsedSec )
 			delete m_Score;
 			m_Score = new Texture(m_ScoreCounter, Font, Color4f(1.0f, 0.0f, 0.0f, 1.0f));
 		}
-		else
-		{
-			Font = TTF_OpenFont("AGENCYB.TTF", 150);
-			delete m_Score;
-			m_Score = new Texture(m_ScoreCounter, Font, Color4f(1.0f, 0.0f, 0.0f, 1.0f));
-
-		}
+		
 
 		if (PowerUpInRange(m_CurrentPowerUpLoc))
 		{
@@ -503,7 +497,8 @@ void Game::Draw( ) const
 		}
 		else
 		{
-			m_GameOver->Draw(Rectf(0.0f, 0.0f, m_GameOver->GetWidth(), m_GameOver->GetHeight()), Rectf(0.0f, 0.0f, m_GameOver->GetWidth(), m_GameOver->GetHeight()));
+
+			m_GameOver->Draw();
 			m_Score->Draw(Rectf(575.0f, 50.0f, 360.0f, 125.0f));
 		}
 	}
