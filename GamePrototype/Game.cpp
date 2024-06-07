@@ -256,7 +256,6 @@ void Game::Update( float elapsedSec )
 			m_DestRect.left = m_Loc.x;
 			m_DestRect.bottom = m_Loc.y;
 
-
 			m_RandomPlebsDest.width = m_PlebsAliveT->GetWidth();
 			m_RandomPlebsDest.height = m_PlebsAliveT->GetHeight();
 
@@ -321,14 +320,6 @@ void Game::Update( float elapsedSec )
 
 			}
 		}
-		if (m_DestRect.bottom <= 22)
-			m_DestRect.bottom = 23;
-		if (m_DestRect.bottom + m_DestRect.height >= 702)
-			m_DestRect.bottom = 701 - m_DestRect.height;
-		if (m_DestRect.left <= 23)
-			m_DestRect.left = 22;
-		if (m_DestRect.left + m_DestRect.width >= 1052)
-			m_DestRect.left = 1051 - m_DestRect.width;
 
 		if (m_GameOverbool && Rbutton)
 		{
@@ -405,6 +396,7 @@ bool Game::PlebsInRange(Rectf PlebsDest)
 				if (utils::IsPointInCircle(Point2f(PlebsDest.left + PlebsDest.width, PlebsDest.bottom + PlebsDest.height),
 					Circlef(Point2f(m_DestRect.left + m_DestRect.width / 2, m_DestRect.bottom + m_DestRect.height / 2), 150.0f))) return true;
 }
+
 
 bool Game::PowerUpInRange(Point2f powerUp)
 {
@@ -516,18 +508,24 @@ void Game::Move(float elapsedSec)
 	const int SPEED{ m_SPEEEEEEED };
 	const Uint8* pStates = SDL_GetKeyboardState(nullptr);
 
-	// read the key values
-
 	const bool isLeft{ bool(pStates[SDL_SCANCODE_LEFT]) };
 	const bool isRight{ bool(pStates[SDL_SCANCODE_RIGHT]) };
 	const bool isUp{ bool(pStates[SDL_SCANCODE_UP]) };
 	const bool isDown{ bool(pStates[SDL_SCANCODE_DOWN]) };
 
-	// update position
-	if (isLeft)        m_Loc.x -= SPEED * elapsedSec;
-	if (isRight)    m_Loc.x += SPEED * elapsedSec;
-	if (isUp)        m_Loc.y += SPEED * elapsedSec;
-	if (isDown)        m_Loc.y -= SPEED * elapsedSec;
+	const int LEFTBOTTOMBOUNDARY = 15;
+	const int RIGHTBOUNDARY = 1051;
+	const int TOPBOUNDARY = 701;
+
+	bool blockedLeft{ m_Loc.x <= LEFTBOTTOMBOUNDARY };
+	bool blockedRight{ m_Loc.x + m_DestRect.width >= RIGHTBOUNDARY };
+	bool blockedUnder{ m_Loc.y <= LEFTBOTTOMBOUNDARY };
+	bool blockedUp{ m_Loc.y + m_DestRect.height >= TOPBOUNDARY };
+
+	if (isLeft && !blockedLeft)        m_Loc.x -= SPEED * elapsedSec;
+	if (isRight && !blockedRight)    m_Loc.x += SPEED * elapsedSec;
+	if (isUp && !blockedUp)        m_Loc.y += SPEED * elapsedSec;
+	if (isDown && !blockedUnder)        m_Loc.y -= SPEED * elapsedSec;
 }
 
 bool Game::HitByBullet(Rectf bullet)

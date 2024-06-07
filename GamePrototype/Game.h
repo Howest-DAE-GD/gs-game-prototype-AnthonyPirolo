@@ -32,6 +32,7 @@ public:
 	float m_PollenMeter{ 100.0f };
 	bool PowerUpInRange(Point2f powerUp);
 	bool HitByBullet(Rectf bullet);
+	void checkCollision(Rectf& DestRect);
 
 	enum class powerUp
 	{
