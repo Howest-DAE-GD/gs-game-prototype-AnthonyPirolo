@@ -319,13 +319,13 @@ void Game::Update( float elapsedSec )
 			}
 		}
 		if (m_DestRect.bottom <= 22)
-			m_DestRect.bottom = 22;
+			m_DestRect.bottom = 23;
 		if (m_DestRect.bottom + m_DestRect.height >= 702)
-			m_DestRect.bottom = 702 - m_DestRect.height;
-		if (m_DestRect.left <= 22)
+			m_DestRect.bottom = 701 - m_DestRect.height;
+		if (m_DestRect.left <= 23)
 			m_DestRect.left = 22;
 		if (m_DestRect.left + m_DestRect.width >= 1052)
-			m_DestRect.left = 1052 - m_DestRect.width;
+			m_DestRect.left = 1051 - m_DestRect.width;
 
 		if (m_GameOverbool && Rbutton)
 		{
