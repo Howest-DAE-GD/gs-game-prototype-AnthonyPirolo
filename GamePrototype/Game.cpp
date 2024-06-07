@@ -118,6 +118,9 @@ void Game::Update( float elapsedSec )
 			m_CurrentPowerUp = powerUp::none;
 
 			m_GameStarted = false;
+
+			m_DblSpeed = false;
+			m_InfPollen = false;
 		}
 
 		m_NewPowerCtr += elapsedSec;
@@ -207,9 +210,9 @@ void Game::Update( float elapsedSec )
 			m_BulletsUp[i].bottom++;
 		}
 
-		if (m_NewPowerCtr >= 10 && !m_PowerUpSpawned)
+		if (m_NewPowerCtr >= 6 && !m_PowerUpSpawned)
 		{
-			int random = rand() % 2;
+			int random = rand() % 3;
 
 			switch (random)
 			{
