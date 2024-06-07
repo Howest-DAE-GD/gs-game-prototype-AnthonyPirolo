@@ -489,7 +489,7 @@ void Game::Draw( ) const
 				utils::FillRect(Rectf(m_CurrentPowerUpLoc.x - 4, m_CurrentPowerUpLoc.y - 4, 8, 8));
 				break;
 			case powerUp::points:
-				utils::SetColor(Color4f(0.0f, 0.0f, 0.0f, 1.0f));
+				utils::SetColor(Color4f(1.0f, 1.0f, 1.0f, 1.0f));
 				utils::FillRect(Rectf(m_CurrentPowerUpLoc.x - 4, m_CurrentPowerUpLoc.y - 4, 8, 8));
 				break;
 
