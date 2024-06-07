@@ -12,7 +12,7 @@ int SDL_main(int argv, char** args)
 
 	StartHeapControl();
 
-	Game* pGame{ new Game{ Window{ "Evil Pollen guy, The Game - Pirolo, Anthony - 1DAE15", 1080.0f, 720.0f } } };
+	Game* pGame{ new Game{ Window{ "Evil Pollen Wizard, The Game - Pirolo, Anthony - 1DAE15", 1080.0f, 720.0f } } };
 	pGame->Run();
 	delete pGame;
 
